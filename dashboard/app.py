@@ -109,7 +109,7 @@ with ui.sidebar(open="open"):
     )
     ui.a(
         "GitHub App",
-        href="https://github.com/hrawp/cintel-05-cintel",
+        href="https://github.com/hrawp/cintel-05-cintel/blob/main/dashboard/app.py",
         target="_blank",
     )
     ui.a("PyShiny", href="https://shiny.posit.co/py/", target="_blank")
@@ -201,6 +201,6 @@ with ui.card():
             fig.add_scatter(x=df["timestamp"], y=df['best_fit_line'], mode='lines', name='Regression Line')
 
             # Update layout as needed to customize further
-            fig.update_layout(xaxis_title="Time",yaxis_title="Temperature (°C)")
+            fig.update_layout(yaxis=dict(range=[-18.1, -15.9]),xaxis_title="Time",yaxis_title="Temperature (°C)",autosize=False,width=1000,height=400)
 
         return fig
