@@ -137,8 +137,6 @@ with ui.layout_columns():
 
 #        "warmer than usual"
 
-  
-
     with ui.value_box(
         full_screen=True, 
         theme="bg-gradient-red-orange"
