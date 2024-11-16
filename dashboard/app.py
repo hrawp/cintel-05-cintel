@@ -61,7 +61,7 @@ def reactive_calc_combined():
     reactive.invalidate_later(UPDATE_INTERVAL_SECS)
 
     # Data generation logic
-    temp = round(random.uniform(-18, -16), 1)
+    temp = round(random.uniform(113, 104), 1)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     new_dictionary_entry = {"temp":temp, "timestamp":timestamp}
 
@@ -88,16 +88,16 @@ def reactive_calc_combined():
 # Call the ui.page_opts() function
 # Set title to a string in quotes that will appear at the top
 # Set fillable to True to use the whole page width for the UI
-ui.page_opts(title="PyShiny Express: Live Data Example", fillable=True)
+ui.page_opts(title="Daytime Teperatures in Riyadh, Saudi Arabia", fillable=True)
+
 
 # Sidebar is typically used for user interaction/information
 # Note the with statement to create the sidebar followed by a colon
 # Everything in the sidebar is indented consistently
 with ui.sidebar(open="open"):
-
-    ui.h2("Antarctic Explorer", class_="text-center")
+    ui.h2("Riyadh - Saudi Arabia", class_="text-center")
     ui.p(
-        "A demonstration of real-time temperature readings in Antarctica.",
+        "Day Time Temperature readings in Riyadh",
         class_="text-center",
     )
     ui.hr()
@@ -113,18 +113,18 @@ with ui.sidebar(open="open"):
         target="_blank",
     )
     ui.a("PyShiny", href="https://shiny.posit.co/py/", target="_blank")
-    ui.a(
-        "PyShiny Express",
-        href="hhttps://shiny.posit.co/blog/posts/shiny-express/",
-        target="_blank",
-    )
+ #   ui.a(
+ #       "PyShiny Express",
+ #       href="hhttps://shiny.posit.co/blog/posts/shiny-express/",
+ #       target="_blank",
+ #   )
 
 # In Shiny Express, everything not in the sidebar is in the main panel
 
 with ui.layout_columns():
     with ui.value_box(
         showcase=icon_svg("sun"),
-        theme="bg-gradient-blue-purple",
+        theme="bg-gradient-red-orange"
     ):
 
         "Current Temperature"
@@ -133,15 +133,19 @@ with ui.layout_columns():
         def display_temp():
             """Get the latest reading and return a temperature string"""
             deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
-            return f"{latest_dictionary_entry['temp']} C"
+            return f"{latest_dictionary_entry['temp']} F"
 
-        "warmer than usual"
+#        "warmer than usual"
 
   
 
-    with ui.card(full_screen=True):
-        ui.card_header("Current Date and Time")
-
+    with ui.value_box(
+        full_screen=True, 
+        theme="bg-gradient-red-orange"
+    ):
+        "Current Date and Time"
+        
+        
         @render.text
         def display_time():
             """Get the latest reading and return a timestamp string"""
@@ -150,8 +154,11 @@ with ui.layout_columns():
 
 
 #with ui.card(full_screen=True, min_height="40%"):
-with ui.card(full_screen=True):
+with ui.card(
+    full_screen=True
+):
     ui.card_header("Most Recent Readings")
+    
 
     @render.data_frame
     def display_df():
@@ -162,6 +169,7 @@ with ui.card(full_screen=True):
 
 with ui.card():
     ui.card_header("Chart with Current Trend")
+    
 
     @render_plotly
     def display_plot():
@@ -181,8 +189,8 @@ with ui.card():
             x="timestamp",
             y="temp",
             title="Temperature Readings with Regression Line",
-            labels={"temp": "Temperature (°C)", "timestamp": "Time"},
-            color_discrete_sequence=["blue"] )
+            labels={"temp": "Temperature (°F)", "timestamp": "Time"},
+            color_discrete_sequence=["red"] )
             
             # Linear regression - we need to get a list of the
             # Independent variable x values (time) and the
@@ -201,6 +209,6 @@ with ui.card():
             fig.add_scatter(x=df["timestamp"], y=df['best_fit_line'], mode='lines', name='Regression Line')
 
             # Update layout as needed to customize further
-            fig.update_layout(yaxis=dict(range=[-18.1, -15.9]),xaxis_title="Time",yaxis_title="Temperature (°C)",autosize=False,width=1000,height=400)
+            fig.update_layout(yaxis=dict(range=[113.1, 103.9]),xaxis_title="Time",yaxis_title="Temperature (°F)",autosize=False,width=1000,height=400)
 
         return fig
