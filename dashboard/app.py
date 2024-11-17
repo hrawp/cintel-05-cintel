@@ -104,7 +104,7 @@ def reactive_calc_combined():
 # Call the ui.page_opts() function
 # Set title to a string in quotes that will appear at the top
 # Set fillable to True to use the whole page width for the UI
-ui.page_opts(title="Daytime Teperatures in Riyadh, Saudi Arabia", fillable=True)
+ui.page_opts(title="Day & Nighttime Teperatures in Riyadh, Saudi Arabia", fillable=True)
 
 
 # Sidebar is typically used for user interaction/information
@@ -113,7 +113,7 @@ ui.page_opts(title="Daytime Teperatures in Riyadh, Saudi Arabia", fillable=True)
 with ui.sidebar(open="open"):
     ui.h2("Riyadh - Saudi Arabia", class_="text-center")
     ui.p(
-        "Day Time Temperature readings in Riyadh",
+        "Temperature readings in Riyadh",
         class_="text-center",
     )
     ui.hr()
@@ -173,7 +173,7 @@ with ui.layout_columns():
         theme="bg-blue"
     ):
 
-        "Nighttime Low"
+        "Nighttime Temperature"
 
         @render.text
         def display_tempn():
@@ -213,7 +213,7 @@ with ui.layout_columns():
  #       return render.DataGrid( df,width="100%")
 
 with ui.card():
-    ui.card_header("Chart with Current Trend")
+    ui.card_header("Temperature Trend Line")
     
 
     @render_plotly
@@ -233,7 +233,7 @@ with ui.card():
             fig = px.scatter(df,
             x="timestamp",
             y="temp",
-            title="Temperature Readings with Regression Line",
+            title="Daytime Temperature Readings with Regression Line",
             labels={"temp": "Temperature (°F)", "timestamp": "Time"},
             color_discrete_sequence=["red"] )
             
@@ -254,6 +254,6 @@ with ui.card():
             fig.add_scatter(x=df["timestamp"], y=df['best_fit_line'], mode='lines', name='Regression Line')
 
             # Update layout as needed to customize further
-            fig.update_layout(yaxis=dict(range=[113.1, 103.9]),xaxis_title="Time",yaxis_title="Temperature (°F)",autosize=False,width=1000,height=400)
+            fig.update_layout(yaxis=dict(range=[103.9, 113.1]),xaxis_title="Time",yaxis_title="Temperature (°F)",autosize=False,width=1000,height=400)
 
         return fig
