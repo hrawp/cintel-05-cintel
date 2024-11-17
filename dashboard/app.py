@@ -6,10 +6,10 @@
 from shiny import reactive, render
 
 # From shiny.express, import just ui and inputs if needed
-from shiny.express import ui
+from shiny.express import  ui
 
 import random
-from datetime import datetime
+from datetime import datetime,timedelta
 from collections import deque
 import pandas as pd
 import plotly.express as px
@@ -44,6 +44,7 @@ UPDATE_INTERVAL_SECS: int = 3
 
 DEQUE_SIZE: int = 5
 reactive_value_wrapper = reactive.value(deque(maxlen=DEQUE_SIZE))
+reactive_value_wrappern = reactive.value(deque(maxlen=DEQUE_SIZE))
 
 # --------------------------------------------
 # Initialize a REACTIVE CALC that all display components can call
@@ -62,24 +63,39 @@ def reactive_calc_combined():
 
     # Data generation logic
     temp = round(random.uniform(113, 104), 1)
+    tempn = round(random.uniform(86, 77), 1)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestampd= datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+    timestampn = timestampd - timedelta(hours=12)
     new_dictionary_entry = {"temp":temp, "timestamp":timestamp}
-
+    new_dictionary_entryn = {"tempn":tempn, "timestampn":timestampn}
+    
     # get the deque and append the new entry
     reactive_value_wrapper.get().append(new_dictionary_entry)
+    # get the deque and append the new entry
+    reactive_value_wrappern.get().append(new_dictionary_entryn)
 
     # Get a snapshot of the current deque for any further processing
     deque_snapshot = reactive_value_wrapper.get()
 
+    # Get a snapshot of the current deque for any further processing
+    deque_snapshotn = reactive_value_wrappern.get()
+
     # For Display: Convert deque to DataFrame for display
     df = pd.DataFrame(deque_snapshot)
+
+    # For Display: Convert deque to DataFrame for display
+    dfn = pd.DataFrame(deque_snapshotn)
 
     # For Display: Get the latest dictionary entry
     latest_dictionary_entry = new_dictionary_entry
 
+    # For Display: Get the latest dictionary entry
+    latest_dictionary_entryn = new_dictionary_entryn
+
     # Return a tuple with everything we need
     # Every time we call this function, we'll get all these values
-    return deque_snapshot, df, latest_dictionary_entry
+    return deque_snapshot, df, latest_dictionary_entry, deque_snapshotn, dfn, latest_dictionary_entryn
 
 
 
@@ -132,7 +148,7 @@ with ui.layout_columns():
         @render.text
         def display_temp():
             """Get the latest reading and return a temperature string"""
-            deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
+            deque_snapshot, df, latest_dictionary_entry, deque_snapshotn, dfn, latest_dictionary_entryn = reactive_calc_combined()
             return f"{latest_dictionary_entry['temp']} F"
 
 #        "warmer than usual"
@@ -147,23 +163,54 @@ with ui.layout_columns():
         @render.text
         def display_time():
             """Get the latest reading and return a timestamp string"""
-            deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
+            deque_snapshot, df, latest_dictionary_entry, deque_snapshotn, dfn, latest_dictionary_entryn = reactive_calc_combined()
             return f"{latest_dictionary_entry['timestamp']}"
 
 
+with ui.layout_columns():
+    with ui.value_box(
+        showcase=icon_svg("moon"),
+        theme="bg-blue"
+    ):
+
+        "Nighttime Low"
+
+        @render.text
+        def display_tempn():
+            """Get the latest reading and return a temperature string"""
+            deque_snapshot, df, latest_dictionary_entry, deque_snapshotn, dfn, latest_dictionary_entryn = reactive_calc_combined()
+            return f"{latest_dictionary_entryn['tempn']} F"
+
+#        "warmer than usual"
+
+    with ui.value_box(
+        full_screen=True, 
+        theme="bg-blue"
+    ):
+        "Last Night's Date and Time"
+        
+        
+        @render.text
+        def display_timen():
+            """Get the latest reading and return a timestamp string"""
+            deque_snapshot, df, latest_dictionary_entry, deque_snapshotn, dfn, latest_dictionary_entryn = reactive_calc_combined()
+            return f"{latest_dictionary_entryn['timestampn']}"
+
+
+
 #with ui.card(full_screen=True, min_height="40%"):
-with ui.card(
-    full_screen=True
-):
-    ui.card_header("Most Recent Readings")
+#with ui.card(
+ ##   full_screen=True
+#):
+#    ui.card_header("Most Recent Readings")
     
 
-    @render.data_frame
-    def display_df():
-        """Get the latest reading and return a dataframe with current readings"""
-        deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
-        pd.set_option('display.width', None)        # Use maximum width
-        return render.DataGrid( df,width="100%")
+ #   @render.data_frame
+ #   def display_df():
+ #       """Get the latest reading and return a dataframe with current readings"""
+ #       deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
+ #       pd.set_option('display.width', None)        # Use maximum width
+ #       return render.DataGrid( df,width="100%")
 
 with ui.card():
     ui.card_header("Chart with Current Trend")
@@ -172,7 +219,7 @@ with ui.card():
     @render_plotly
     def display_plot():
         # Fetch from the reactive calc function
-        deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
+        deque_snapshot, df, latest_dictionary_entry, deque_snapshotn, dfn, latest_dictionary_entryn = reactive_calc_combined()
 
         # Ensure the DataFrame is not empty before plotting
         if not df.empty:
