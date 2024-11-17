@@ -199,18 +199,19 @@ with ui.layout_columns():
 
 
 #with ui.card(full_screen=True, min_height="40%"):
-#with ui.card(
- ##   full_screen=True
-#):
-#    ui.card_header("Most Recent Readings")
+with ui.card(
+    full_screen=True
+):
+    ui.card_header("Most Recent Readings")
     
 
- #   @render.data_frame
- #   def display_df():
- #       """Get the latest reading and return a dataframe with current readings"""
- #       deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
- #       pd.set_option('display.width', None)        # Use maximum width
- #       return render.DataGrid( df,width="100%")
+    @render.data_frame
+    def display_df():
+        """Get the latest reading and return a dataframe with current readings"""
+        deque_snapshot, df, latest_dictionary_entry, deque_snapshotn, dfn, latest_dictionary_entryn = reactive_calc_combined()
+        pd.set_option('display.width', None)        # Use maximum width
+        return render.DataGrid( df,width="75%")
+
 
 with ui.card():
     ui.card_header("Temperature Trend Line")
